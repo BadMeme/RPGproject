@@ -19,6 +19,7 @@ class player:
         self.hp = 5
         self.mp = 0
         self.conditions = []
+        self.wounds = []
         self.stats = {
             'strength' : 2,
             'vitality' : 2,
@@ -39,7 +40,8 @@ class player:
             'stealth' : 0,
             'insight' : 0
         }
-        self.location = 'b2'
+        self.location = ''
+        self.origin = ''
         self.gameover = False
         #leaving room to expand past tutorial. might store stats in a dictionary or as individual properties of player
 
@@ -90,3 +92,38 @@ def help_menu():
     title_screen_selections()
 
 
+### Game Loops ###
+
+# Blocking out New Game -> Character Creation -> Map movement #
+
+def script_text(script):
+    for character in script:
+        sys.stdout.write(character)
+        sys.stdout.flush() ###Look this up
+        time.sleep(0.03)
+
+def start_game():
+    # Create character
+    # Ask character customization questions
+    # assign stats + skills
+    os.system('clear')
+
+    question1 = 'Hello, what is your name?\n'
+    script_text(question1)
+    main_character.name = input('> ')
+
+    question2 = 'Hello, ' + main_character.name + '. What is your origin?\n'
+    script_text(question2)
+    main_character.origin = input('> ')
+
+    if main_character.origin == 'debug':
+        main_character.stats = {
+            'strength' : 8,
+            'vitality' : 8,
+            'agility' : 8,
+            'mind' : 8,
+            'will' : 8,
+            'charisma' : 8
+        }
+
+    print(main_character.stats)

@@ -51,4 +51,4 @@ def opposed_check(player='', opponent=''):
 ### Test ###
 # diceroll()
 # ability_check()
-opposed_check()
+# opposed_check()
