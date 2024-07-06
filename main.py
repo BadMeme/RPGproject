@@ -17,9 +17,10 @@ class player:
     def __init__(self):
         self.name = ''
         self.hp = 5
-        self.mp = 0
+        self.mp = 5
         self.conditions = []
         self.wounds = []
+        self.inventory = []
         self.stats = {
             'strength' : 2,
             'vitality' : 2,
@@ -45,7 +46,66 @@ class player:
         self.gameover = False
         #leaving room to expand past tutorial. might store stats in a dictionary or as individual properties of player
 
+class zone:
+    def __init__(self):
+        self.size = {
+            'x' : '', #width
+            'y' : '', #height
+            'z' : ''  #floors
+        }
+        self.rooms = []
+        self.contains = []
+        self.description = ''
+
+class room:
+    def __init__(self):
+        self.xyz = {
+            'x' : '',
+            'y' : '',
+            'z' : '',
+        }
+        self.tiles = []
+        self.doors = []
+        self.event = []
+        self.contains = []
+        self.description = ''
+
+class tile:
+    def __init__(self):
+        self.xyz = {
+            'x' : '',
+            'y' : '',
+            'z' : '',
+        }
+        self.event = []
+        self.contains = []
+        self.description = ''
+
 main_character = player()
+
+# Game Zones
+demo_zone = zone()
+demo_zone.size = {
+    'x' : 5, #width
+    'y' : 5, #height
+    'z' : 1  #floors
+}
+demo_zone.description = 'A strange gaol. The dust seems to hang in the air.'
+
+def create_zone(zone):
+    for z in zone.size[z]:
+        for y in zone.size[y]:
+            for x in zone.size[x]:
+                new_room = room()
+                new_room.xyz = {
+                    'x' : x,
+                    'y' : y,
+                    'z' : z
+                }
+                zone.rooms.append(new_room)
+
+    
+
 
     #Will make game state tracker for time and ambient mana, as well as rng shit. lots of stuff later
 
@@ -118,12 +178,66 @@ def start_game():
 
     if main_character.origin == 'debug':
         main_character.stats = {
-            'strength' : 8,
-            'vitality' : 8,
-            'agility' : 8,
-            'mind' : 8,
-            'will' : 8,
-            'charisma' : 8
+            'strength' : 10,
+            'vitality' : 10,
+            'agility' : 10,
+            'mind' : 10,
+            'will' : 10,
+            'charisma' : 10
         }
+    elif main_character.origin == 'warrior':
+        main_character.stats = {
+            'strength' : 15,
+            'vitality' : 12,
+            'agility' : 12,
+            'mind' : 10,
+            'will' : 8,
+            'charisma' : 5
+        }
+    elif main_character.origin == 'thief':
+        main_character.stats = {
+            'strength' : 10,
+            'vitality' : 10,
+            'agility' : 15,
+            'mind' : 12,
+            'will' : 5,
+            'charisma' : 12
+        }
+    elif main_character.origin == 'mage':
+        main_character.stats = {
+            'strength' : 5,
+            'vitality' : 10,
+            'agility' : 8,
+            'mind' : 15,
+            'will' : 12,
+            'charisma' : 12
+        }
+    else :
+        main_character.stats = {
+            'strength' : 10,
+            'vitality' : 10,
+            'agility' : 10,
+            'mind' : 10,
+            'will' : 10,
+            'charisma' : 10
+        }
+        for skill in main_character.skills :
+            main_character.skills[skill] = 3
+    
+    introtext = main_character.name + ' the ' + main_character.origin + '...\n'
+    introtext_2 = 'To be adventuring here, you must be seeking the manafont.\n'
+    introtext_3 = 'That from which all things emerge\n.'
+    introtext_4 = '...and to which all things return.\n'
+    # introtext_5 = 'Many fearsome things seek to master the manafont. Not the least of which, Man\n'
+    introtext_6 = 'There is danger, but do not fear.\n'
+    introtext_7 = 'Remember, all things remain in flux.'
+    script_text(introtext)
+    script_text(introtext_2)
+    script_text(introtext_3)
+    script_text(introtext_4)
+    # script_text(introtext_5)
+    script_text(introtext_6)
+    script_text(introtext_7)
 
-    print(main_character.stats)
+
+# title_screen()
