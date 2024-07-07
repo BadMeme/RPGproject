@@ -13,6 +13,13 @@ import random
 screen_width = 100
 
 # Game State
+
+gamestate = {
+    'player_pos' : None,
+    'player_room' : None,
+    'player_zone' : None,
+}
+
 class player:
     def __init__(self):
         self.name = ''
@@ -59,6 +66,7 @@ class zone:
 
 class room:
     def __init__(self):
+        self.id = 0
         self.xyz = {
             'x' : '',
             'y' : '',
@@ -92,20 +100,23 @@ demo_zone.size = {
 }
 demo_zone.description = 'A strange gaol. The dust seems to hang in the air.'
 
-def create_zone(zone):
-    for z in zone.size[z]:
-        for y in zone.size[y]:
-            for x in zone.size[x]:
+def create_zone(zone=demo_zone):
+    # print('Test: ' + zone.description)
+    id_counter = 0
+    for z in range (zone.size['z']):
+        for y in range (zone.size['y']):
+            for x in range (zone.size['x']):
                 new_room = room()
+                new_room.id = id_counter
                 new_room.xyz = {
                     'x' : x,
                     'y' : y,
                     'z' : z
                 }
                 zone.rooms.append(new_room)
+                id_counter += 1
 
-    
-
+create_zone(demo_zone)
 
     #Will make game state tracker for time and ambient mana, as well as rng shit. lots of stuff later
 
@@ -137,6 +148,8 @@ def title_screen():
     print('          - Play -          ')
     print('          - Help -          ')
     print('          - Quit -          ')
+    print('                            ')
+    print('                            ')
     print('   Copyright 2024 badMeme   ') #lol is this even right
     title_screen_selections()
 
@@ -148,9 +161,55 @@ def help_menu():
     print(' - Use up, down, Left, right to move')
     print(' - Type command names to perform actions')
     print(' - "Look" to inspect something       ')
-    print('     Copyright 2024 badMeme ') #lol is this even right
+    print('                            ')
+    print('                            ')
+    print('                            ')
+    print('                            ') #lol is this even right
     title_screen_selections()
 
+# Gameplay Screen 
+
+def move():
+    print('Write the move function to update gamestate with room info')
+    # if direction.lower == 'move' :
+    #     print('Which direction?')
+    #     print('[W] Up')
+    #     print('[S] Down')
+    #     print('[A] Left')
+    #     print('[D] Right')
+    #     choice = input('> ')
+    #     move(choice)
+    action_menu()
+
+def inspect():
+    print('Fill rooms with inspectible stuff')
+    action_menu()
+
+def interact():
+    print('Make rooms with interactable stuff')
+    action_menu()
+
+
+def action_menu_selections():
+    option = input("> ")
+    if option.lower() == ('move') or ('m') or ('a') or ('s') or ('d') or ('w') :
+        move(option) #writing this soon
+    elif option.lower() == ('inspect') or ('i'):
+        inspect()
+    elif option.lower() == ('interact') or ('j'):
+        interact()
+    elif option.lower() == ('quit'):
+        sys.exit()
+    else :
+        print("Please enter a valid command.")
+        action_menu_selections()
+
+def action_menu():
+    os.system('clear')
+    print('############################')
+    print('##    Input your action   ##')
+    print('############################')
+    action_menu_selections()
 
 ### Game Loops ###
 
@@ -188,20 +247,20 @@ def start_game():
     elif main_character.origin == 'warrior':
         main_character.stats = {
             'strength' : 15,
-            'vitality' : 12,
-            'agility' : 12,
+            'vitality' : 13,
+            'agility' : 11,
             'mind' : 10,
             'will' : 8,
             'charisma' : 5
         }
     elif main_character.origin == 'thief':
         main_character.stats = {
-            'strength' : 10,
+            'strength' : 11,
             'vitality' : 10,
             'agility' : 15,
-            'mind' : 12,
+            'mind' : 8,
             'will' : 5,
-            'charisma' : 12
+            'charisma' : 13
         }
     elif main_character.origin == 'mage':
         main_character.stats = {
@@ -209,8 +268,8 @@ def start_game():
             'vitality' : 10,
             'agility' : 8,
             'mind' : 15,
-            'will' : 12,
-            'charisma' : 12
+            'will' : 13,
+            'charisma' : 11
         }
     else :
         main_character.stats = {
@@ -239,5 +298,10 @@ def start_game():
     script_text(introtext_6)
     script_text(introtext_7)
 
+    # gamestate.player_pos = 0
+    # gamestate.player_zone = 0
 
-# title_screen()
+    action_menu()
+
+
+title_screen()
