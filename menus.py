@@ -51,7 +51,6 @@ def movement_handler(destination):
     # main_character.location = destination
     print_location()
 
-
 def inspect():
     print('Test: Inspect')
     print('Fill rooms with inspectible stuff')
@@ -64,7 +63,7 @@ def interact():
 
 def action_menu() :
     print('Test: Action Menu')
-    print('Select action')
+    print('Select action\n')
     action_menu_selections()
 
 def action_menu_selections():
@@ -97,10 +96,13 @@ def testmovefunctions() :
     print('Test: ACTION MENU START')
     action_menu_selections()
 
-# gamestate['playerpos'] = {
-#         'x' : 1,
-#         'y' : 1,
-#         'z' : 1
-#     }
+gamestate['playerpos'] = {
+        'x' : 1,
+        'y' : 1,
+        'z' : 1
+    }
 # testmovefunctions()
 # print(gamestate['playerpos']['x'])
+
+# Export
+
