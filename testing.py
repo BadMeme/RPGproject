@@ -19,7 +19,7 @@ def main():
     player_y = int(screen_height / 2)
 
     libtcod.console_set_custom_font(FONT_FILE, libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
-    libtcod.console_init_root(screen_width, screen_height, "ombarus libtcod tutorial revised", False)
+    libtcod.console_init_root(screen_width, screen_height, "IO engine project", False)
 
     key=libtcod.Key()
     mouse=libtcod.Mouse()
