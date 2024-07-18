@@ -1,5 +1,13 @@
 # IO text RPG main engine file 
 
+import tcod
+
+def main():
+    print('Testing Hello World')
+
+if __name__ == "__main__":
+    main()
+
 # imports
 
 import cmd
@@ -63,15 +71,7 @@ main_character = character()
 
 
 # Game Zones
-demo_zone = maps.zone()
-demo_zone.size = {
-    'x' : 5, #width
-    'y' : 5, #height
-    'z' : 1  #floors
-}
-demo_zone.description = 'A strange gaol. The dust seems to hang in the air.'
 
-maps.create_zone(demo_zone)
 
     #Will make game state tracker for time and ambient mana, as well as rng shit. lots of stuff later
 
@@ -80,7 +80,7 @@ maps.create_zone(demo_zone)
 def title_screen_selections():
     option = input("> ")
     if option.lower() == ("play"):
-        start_game() #writing this soon
+        start_game() 
     elif option.lower() == ("help"):
         help_menu()
     elif option.lower() == ("quit"):
@@ -89,7 +89,7 @@ def title_screen_selections():
         print("Please enter a valid command.")
         option = input("> ")
         if option.lower() == ("play"):
-            start_game() #writing this soon
+            start_game() 
         elif option.lower() == ("help"):
             help_menu()
         elif option.lower() == ("quit"):

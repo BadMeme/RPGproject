@@ -35,6 +35,6 @@ demo_zone.rooms[0].events.append('Testin this shit')
 
 def check_da_rooms(zone):
     for room in zone.rooms :
-        print(room.event)
+        print(room.events)
 
 check_da_rooms(demo_zone) 
