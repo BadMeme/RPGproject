@@ -1,220 +1,87 @@
-# IO text RPG main engine file 
+# main gaim loop logic
 
-import tcod
-
-def main():
-    print('Testing Hello World')
-
-if __name__ == "__main__":
-    main()
-
-# imports
-
-import cmd
-import textwrap
 import sys
 import os
-import time
-import random
+# os.environ["path"] = os.path.dirname(sys.executable) + ";" + os.environ["path"]
+import glob
 
-# Game imports
-import maps
-import menus
+import tcod.console
+import tcod.context
+import tcod.event
+import tcod.tileset
 
-# settings
-screen_width = 100
-
-# Game State
-
-gamestate = {
-    'player_pos' : None, # {x,y,z}
-    'player_room' : None,
-    'player_zone' : None,
-}
-
-# Game Objects
-import gameobjects
-
-class character:
-    def __init__(self):
-        self.name = ''
-        self.hp = 5
-        self.mp = 5
-        self.conditions = []
-        self.wounds = []
-        self.inventory = []
-        self.stats = {
-            'strength' : 2,
-            'vitality' : 2,
-            'agility' : 2,
-            'mind' : 2,
-            'will' : 2,
-            'charisma' : 2
-        }
-        self.skills = {
-            'blade' : 0,
-            'polearm' : 0,
-            'mace' : 0,
-            'perception' : 0,
-            'athletics' : 0,
-            'influence' : 0,
-            'decieve' : 0,
-            'arcane' : 0,
-            'stealth' : 0,
-            'insight' : 0
-        }
-        self.location = ''
-        self.origin = ''
-        self.gameover = False
-        #leaving room to expand past tutorial. might store stats in a dictionary or as individual properties of player
-main_character = character()
+from tcod import libtcodpy # <- For refactor, sys warnings
+from input_handlers import handle_keys
 
 
-# Game Zones
+DATA_FOLDER = 'data'
+FONT_FILE = os.path.join(DATA_FOLDER, "dejavu10x10_gs_tc.png")
+#
+def main() -> None:
+    screen_width = 80
+    screen_height = 50
 
+    player_x = int(screen_width / 2)
+    player_y = int(screen_height / 2)
 
-    #Will make game state tracker for time and ambient mana, as well as rng shit. lots of stuff later
-
-### Title Screen 
-
-def title_screen_selections():
-    option = input("> ")
-    if option.lower() == ("play"):
-        start_game() 
-    elif option.lower() == ("help"):
-        help_menu()
-    elif option.lower() == ("quit"):
-        sys.exit()
-    while option.lower() not in ['play', 'help', 'quit']:
-        print("Please enter a valid command.")
-        option = input("> ")
-        if option.lower() == ("play"):
-            start_game() 
-        elif option.lower() == ("help"):
-            help_menu()
-        elif option.lower() == ("quit"):
-            sys.exit()
-
-def title_screen():
-    os.system('clear')
-    print('############################')
-    print('###          I|O         ###')
-    print('############################')
-    print('          - Play -          ')
-    print('          - Help -          ')
-    print('          - Quit -          ')
-    print('                            ')
-    print('                            ')
-    print('   Copyright 2024 badMeme   ') #lol is this even right
-    title_screen_selections()
-
-def help_menu():
-    os.system('clear')
-    print('############################')
-    print('###          I|O         ###')
-    print('############################')
-    print(' - Use up, down, Left, right to move')
-    print(' - Type command names to perform actions')
-    print(' - "Look" to inspect something       ')
-    print('                            ')
-    print('                            ')
-    print('                            ')
-    print('                            ') #lol is this even right
-    title_screen_selections()
-
-# Gameplay Screen 
-
-### Game Loops ###
-
-# Blocking out New Game -> Character Creation -> Map movement #
-
-def script_text(script):
-    for character in script:
-        sys.stdout.write(character)
-        sys.stdout.flush() ###Look this up
-        time.sleep(0.03)
-
-def start_game():
-    # Create character
-    # Ask character customization questions
-    # assign stats + skills
-    os.system('clear')
-
-    question1 = 'Hello, what is your name?\n'
-    script_text(question1)
-    main_character.name = input('> ')
-
-    question2 = 'Hello, ' + main_character.name + '. What is your origin?\n'
-    script_text(question2)
-    main_character.origin = input('> ')
-
-    if main_character.origin == 'debug':
-        main_character.stats = {
-            'strength' : 10,
-            'vitality' : 10,
-            'agility' : 10,
-            'mind' : 10,
-            'will' : 10,
-            'charisma' : 10
-        }
-    elif main_character.origin == 'warrior':
-        main_character.stats = {
-            'strength' : 15,
-            'vitality' : 13,
-            'agility' : 11,
-            'mind' : 10,
-            'will' : 8,
-            'charisma' : 5
-        }
-    elif main_character.origin == 'thief':
-        main_character.stats = {
-            'strength' : 11,
-            'vitality' : 10,
-            'agility' : 15,
-            'mind' : 8,
-            'will' : 5,
-            'charisma' : 13
-        }
-    elif main_character.origin == 'mage':
-        main_character.stats = {
-            'strength' : 5,
-            'vitality' : 10,
-            'agility' : 8,
-            'mind' : 15,
-            'will' : 13,
-            'charisma' : 11
-        }
-    else :
-        main_character.stats = {
-            'strength' : 10,
-            'vitality' : 10,
-            'agility' : 10,
-            'mind' : 10,
-            'will' : 10,
-            'charisma' : 10
-        }
-        for skill in main_character.skills :
-            main_character.skills[skill] = 3
+    tileset = tcod.tileset.load_tilesheet(FONT_FILE, 32, 8, tcod.tileset.CHARMAP_TCOD)
     
-    introtext = main_character.name + ' the ' + main_character.origin + '...\n'
-    introtext_2 = 'To be adventuring here, you must be seeking the manafont.\n'
-    introtext_3 = 'That from which all things emerge\n.'
-    introtext_4 = '...and to which all things return.\n'
-    # introtext_5 = 'Many fearsome things seek to master the manafont. Not the least of which, Man\n'
-    introtext_6 = 'There is danger, but do not fear.\n'
-    introtext_7 = 'Remember, all things remain in flux.\n'
-    script_text(introtext)
-    script_text(introtext_2)
-    script_text(introtext_3)
-    script_text(introtext_4)
-    # script_text(introtext_5)
-    script_text(introtext_6)
-    script_text(introtext_7)
+    with tcod.context.new_terminal(
+        screen_width, 
+        screen_height, 
+        tileset=tileset, 
+        title="IO engine project", 
+        vsync=True
+    ) as context :
+        root_console = tcod.console.Console(screen_width, screen_height, order="F")
+        while True: 
+            root_console.print(x=player_x, y=player_y, string="@")
+            context.present(root_console)
+            for event in tcod.event.wait():
+                if event.type == 'QUIT' :
+                    raise SystemExit()
 
-    # gamestate.player_pos = 0
-    # gamestate.player_zone = 0
+    
+    
 
-    menus.action_menu()
+    # libtcodpy.console_set_custom_font(FONT_FILE, libtcodpy.FONT_TYPE_GREYSCALE | libtcodpy.FONT_LAYOUT_TCOD)
+    # libtcodpy.console_init_root(screen_width, screen_height, "IO engine project", False)
+
+    # console = tcod.console.Console(screen_width, screen_height)
+
+    # key=libtcodpy.Key()
+    # mouse=libtcodpy.Mouse()
+
+    # while not libtcodpy.console_is_window_closed():
+    #     libtcodpy.sys_check_for_event(libtcodpy.EVENT_KEY_PRESS, key, mouse)
+    #     libtcodpy.console_set_default_foreground(0, (255, 255, 255))
+    #     libtcodpy.console_put_char(0, player_x, player_y, '@', libtcodpy.BKGND_NONE)
+    #     # libtcodpy.console_blit(console, 0, 0, screen_width, screen_height, 0, 0, 0)
+    #     libtcodpy.console_flush()
+
+    #     libtcodpy.console_put_char(console, player_x, player_y, ' ', libtcodpy.BKGND_NONE)
+    
+    #     action = handle_keys(key)
+
+    #     move = action.get('move')
+    #     exit = action.get('exit')
+    #     fullscreen = action.get('fullscreen')
+
+    #     if move:
+    #         dx, dy = move
+    #         player_x += dx
+    #         player_y += dy
+
+    #     if exit:
+    #         return True
+        
+    #     if fullscreen: 
+    #         libtcodpy.console_set_fullscreen(not libtcodpy.console_is_fullscreen())
+
+    #     if key.vk == libtcodpy.KEY_ESCAPE :
+    #         return True
 
 
-title_screen()
+if __name__ == "__main__" :
+    main()
+

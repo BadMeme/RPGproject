@@ -1,23 +1,55 @@
-import tcod as libtcod
+from typing import Optional
+import tcod.event
+from tcod import libtcodpy
 
-def handle_keys(key):
-    # movement keys
-    if key.vk == libtcod.KEY_UP:
-        return {"move":(0,-1)}
-    elif key.vk == libtcod.KEY_DOWN:
-        return {"move":(0,1)}
-    elif key.vk == libtcod.KEY_LEFT:
-        return {"move":(-1,0)}
-    elif key.vk == libtcod.KEY_RIGHT:
-        return {"move":(1,0)}            
-    # may add z variable here later for tile height etc
+from actions import Action, EscapeAction, MovementAction
 
-    if key.vk == libtcod.KEY_ENTER and key.lalt:
-        # ALT+Enter: toggle full screen
-        return {"fullscreen": True}
+class EventHandler(tcod.event.EventDispatch[Action]) :
+    def ev_quit (self, event: tcod.event.Quit) -> Optional[Action]:
+        raise SystemExit()
     
-    elif key.vk == libtcod.KEY_ESCAPE:
-        # Exit the game
-        return {'exit': True}
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
+        action: Optional[Action] = None
+
+        key = event.sym
+
+        if key == tcod.event.K_UP:
+            action = MovementAction(dx=0, dy=-1)
+        elif key == tcod.event.K_DOWN:
+            action = MovementAction(dx=0, dy=1)
+        elif key == tcod.event.K_LEFT:
+            action = MovementAction(dx=-1, dy=0)
+        elif key == tcod.event.K_RIGHT:
+            action = MovementAction(dx=1, dy=0)
+
+        elif key == tcod.event.K_ESCAPE:
+            action = EscapeAction()
+
+        return action
+#  Old Key handler. Leaving as notes for future refactor.
+#  Refactor notes that this version handles the information being passed
+#  As dictionaries, so that these functions can be called without explicit
+#  Key presses. (Simultaneous info, AI input? etc)
+
+
+# def handle_keys(key):
+#     # movement keys
+#     if key.vk == libtcodpy.KEY_UP:
+#         return {"move":(0,-1)}
+#     elif key.vk == libtcodpy.KEY_DOWN:
+#         return {"move":(0,1)}
+#     elif key.vk == libtcodpy.KEY_LEFT:
+#         return {"move":(-1,0)}
+#     elif key.vk == libtcodpy.KEY_RIGHT:
+#         return {"move":(1,0)}            
+#     # may add z variable here later for tile height etc
+
+#     if key.vk == libtcodpy.KEY_ENTER and key.lalt:
+#         # ALT+Enter: toggle full screen
+#         return {"fullscreen": True}
     
-    return {}
+#     elif key.vk == libtcodpy.KEY_ESCAPE:
+#         # Exit the game
+#         return {'exit': True}
+    
+#     return {}
