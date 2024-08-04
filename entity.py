@@ -1,0 +1,14 @@
+from typing import Tuple
+
+class Entity:
+    # Generic object class encompassing player, enemy, item, etc.
+    def __init__(self, x: int, y: int, char: str, color: Tuple[int, int, int]):
+        self.x = x
+        self.y = y
+        self.char = char
+        self.color = color
+
+    def move(self, dx: int, dy: int) -> None:
+        # move the entity by a given amount
+        self.x += dx
+        self.y += dy
