@@ -3,6 +3,7 @@ import random
 from typing import Iterator, Tuple, List, TYPE_CHECKING
 import tcod # prepare to refactor
 
+from engine import Engine
 import gameobjects
 from game_map import GameMap
 import tile_types
@@ -83,7 +84,7 @@ def generate_dungeon(
         player: Entity,
 ) -> GameMap:
     """Generate a new dungeon map."""
-    dungeon = GameMap(map_width, map_height)
+    dungeon = GameMap(map_width, map_height, entities =[player])
 
     rooms: List[RectangularRoom] = []
 

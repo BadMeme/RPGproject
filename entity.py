@@ -5,7 +5,7 @@ import copy
 
 if TYPE_CHECKING:
     from game_map import GameMap
-T= TypeVar('T', bound='Entity')
+T = TypeVar('T', bound='Entity')
 
 class Entity:
     # Generic object class encompassing player, enemy, item, etc.

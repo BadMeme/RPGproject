@@ -18,7 +18,7 @@ from engine import Engine
 import gameobjects
 # from game_map import GameMap
 # from actions import EscapeAction, MovementAction
-from input_handlers import EventHandler# handle_keys
+from input_handlers import EventHandler # handle_keys
 from procgen import generate_dungeon
 
 

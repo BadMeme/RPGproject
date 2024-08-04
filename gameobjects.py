@@ -43,7 +43,7 @@ class character:
         self.origin = ''
         self.gameover = False
         #leaving room to expand past tutorial. might store stats in a dictionary or as individual properties of player
-player = character()
+# player = character()
 
 class zone:
     def __init__(self):
