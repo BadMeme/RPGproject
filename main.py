@@ -12,8 +12,9 @@ import tcod.tileset
 
 from tcod import libtcodpy # <- For refactor, sys warnings
 
+from engine import Engine
 from entity import Entity
-from actions import EscapeAction, MovementAction
+# from actions import EscapeAction, MovementAction
 from input_handlers import EventHandler# handle_keys
 
 
@@ -30,8 +31,9 @@ def main() -> None:
 
     player = Entity(int(screen_width / 2), int(screen_height/2), "@", (255,255,255))
     npc = Entity(int(screen_width / 2 - 5), int(screen_height/2), "@", (255,255,0))
-    entities = EventHandler()
+    entities = {npc, player}
 
+    engine = Engine(entities=entities, event_handler=event_handler, player=player)
 
     with tcod.context.new_terminal(
         screen_width, 
@@ -42,60 +44,9 @@ def main() -> None:
     ) as context :
         root_console = tcod.console.Console(screen_width, screen_height, order="F")
         while True: 
-            root_console.print(x=player.x, y=player.y, string=player.char, fg=player.color)
-            context.present(root_console)
-            root_console.clear()
-            
-            for event in tcod.event.wait():
-                action = event_handler.dispatch(event)
-
-                if action is None:
-                    continue
-                if isinstance(action, MovementAction):
-                    player.move(dx=action.dx, dy=action.dy)
-                
-                elif isinstance(action, EscapeAction):
-                    raise SystemExit()
-    
-    
-
-    # libtcodpy.console_set_custom_font(FONT_FILE, libtcodpy.FONT_TYPE_GREYSCALE | libtcodpy.FONT_LAYOUT_TCOD)
-    # libtcodpy.console_init_root(screen_width, screen_height, "IO engine project", False)
-
-    # console = tcod.console.Console(screen_width, screen_height)
-
-    # key=libtcodpy.Key()
-    # mouse=libtcodpy.Mouse()
-
-    # while not libtcodpy.console_is_window_closed():
-    #     libtcodpy.sys_check_for_event(libtcodpy.EVENT_KEY_PRESS, key, mouse)
-    #     libtcodpy.console_set_default_foreground(0, (255, 255, 255))
-    #     libtcodpy.console_put_char(0, player_x, player_y, '@', libtcodpy.BKGND_NONE)
-    #     # libtcodpy.console_blit(console, 0, 0, screen_width, screen_height, 0, 0, 0)
-    #     libtcodpy.console_flush()
-
-    #     libtcodpy.console_put_char(console, player_x, player_y, ' ', libtcodpy.BKGND_NONE)
-    
-    #     action = handle_keys(key)
-
-    #     move = action.get('move')
-    #     exit = action.get('exit')
-    #     fullscreen = action.get('fullscreen')
-
-    #     if move:
-    #         dx, dy = move
-    #         player_x += dx
-    #         player_y += dy
-
-    #     if exit:
-    #         return True
-        
-    #     if fullscreen: 
-    #         libtcodpy.console_set_fullscreen(not libtcodpy.console_is_fullscreen())
-
-    #     if key.vk == libtcodpy.KEY_ESCAPE :
-    #         return True
-
+            engine.render(console=root_console, context=context)
+            events = tcod.event.wait()
+            engine.handle_events(events)
 
 if __name__ == "__main__" :
     main()
