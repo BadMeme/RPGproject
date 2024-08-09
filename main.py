@@ -18,7 +18,6 @@ from engine import Engine
 import gameobjects
 # from game_map import GameMap
 # from actions import EscapeAction, MovementAction
-from input_handlers import EventHandler # handle_keys
 from procgen import generate_dungeon
 
 
@@ -64,6 +63,7 @@ def main() -> None:
     ) as context :
         root_console = tcod.console.Console(screen_width, screen_height, order="F")
         while True: 
+            engine.render(console=root_console, context=context)
             engine.event_handler.handle_events()
 
 if __name__ == "__main__" :
