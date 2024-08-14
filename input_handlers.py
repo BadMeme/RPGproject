@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 import tcod.event
 # from tcod import libtcodpy
-from actions import Action, EscapeAction, BumpAction
+from actions import Action, EscapeAction, BumpAction, WaitAction
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -11,6 +11,13 @@ class EventHandler(tcod.event.EventDispatch[Action]) :
     def __init__(self, engine: Engine):
         self.engine = engine
 
+    def handle_events(self) -> None:
+        raise NotImplementedError()
+    
+    def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
+        raise SystemExit()
+
+class MainGameEventHandler(EventHandler):
     def handle_events(self) -> None:
         for event in tcod.event.wait():
             action = self.dispatch(event)
@@ -23,8 +30,8 @@ class EventHandler(tcod.event.EventDispatch[Action]) :
             self.engine.handle_enemy_turns()
             self.engine.update_fov() # Update the FOV before the players next actions
 
-    def ev_quit (self, event: tcod.event.Quit) -> Optional[Action]:
-        raise SystemExit()
+    # def ev_quit (self, event: tcod.event.Quit) -> Optional[Action]:
+    #     raise SystemExit()
     
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
         action: Optional[Action] = None
@@ -50,6 +57,30 @@ class EventHandler(tcod.event.EventDispatch[Action]) :
             action = EscapeAction(player)
 
         return action
+    
+class GameOverEventHandler(EventHandler):
+    def handle_events(self) -> None:
+        for event in tcod.event.wait():
+            action = self.dispatch(event)
+
+            if action is None:
+                continue
+
+            action.perform()
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
+        action: Optional[Action] = None
+
+        key = event.sym
+
+        if key == tcod.event.KeySym.ESCAPE: #TODO this makes an error, suggests ESCAPE but doesnt work
+            action = EscapeAction(self.engine.player)
+
+        #no valid key was pressed
+        return action
+
+
+
 #  Old Key handler. Leaving as notes for future refactor.
 #  Refactor notes that this version handles the information being passed
 #  As dictionaries, so that these functions can be called without explicit
