@@ -66,7 +66,7 @@ class GameMap:
         If it isnt, but its in the explored array, draw it with the dark colors"
         Otherwise, the default is "Shroud"
         """
-        console.tiles_rgb[0 : self.width, 0 : self.height] = np.select(
+        console.rgb[0 : self.width, 0 : self.height] = np.select(
             condlist = [self.visible, self.explored],
             choicelist = [self.tiles['light'], self.tiles['dark']],
             default = tile_types.SHROUD,

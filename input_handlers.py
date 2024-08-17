@@ -94,10 +94,10 @@ class GameOverEventHandler(EventHandler):
         return action
 
 CURSOR_Y_KEYS = {
-    tcod.event.K_UP: -1, 
-    tcod.event.K_DOWN: 1,
-    tcod.event.K_PAGEUP: -10,
-    tcod.event.K_PAGEDOWN: 10,
+    tcod.event.KeySym.UP: -1, 
+    tcod.event.KeySym.DOWN: 1,
+    tcod.event.KeySym.PAGEUP: -10,
+    tcod.event.KeySym.PAGEDOWN: 10,
 }
 
 class HistoryViewer(EventHandler):
@@ -144,9 +144,9 @@ class HistoryViewer(EventHandler):
             else:
                 # Otherwise move while staying clamped to the bounds of the history
                 self.cursor = max(0, min(self.cursor + adjust, self.log_length -1))
-        elif event.sym == tcod.event.K_HOME:
+        elif event.sym == tcod.event.KeySym.HOME:
             self.cursor = 0 # move directly to the top message
-        elif event.sym == tcod.event.K_END:
+        elif event.sym == tcod.event.KeySym.END:
             self.cursor = self.log_length - 1 #move directly to the last message
         else: # any other key moves back to the main game state
             self.evngine.event_handler = MainGameEventHandler(self.engine)
