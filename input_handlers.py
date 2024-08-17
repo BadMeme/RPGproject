@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional, TYPE_CHECKING
 import tcod.event
-# from tcod import libtcodpy
+from tcod import libtcodpy
 from actions import Action, EscapeAction, BumpAction, WaitAction
 
 if TYPE_CHECKING:
@@ -67,7 +67,7 @@ class MainGameEventHandler(EventHandler):
             action = BumpAction(player, dx=1, dy=0)
         elif key == tcod.event.KeySym.ESCAPE:
             action = EscapeAction(player)
-        elif key == tcod.event.K_v:
+        elif key == tcod.event.KeySym.v:
             self.engine.event_handler = HistoryViewer(self.engine)
 
         return action
@@ -116,7 +116,7 @@ class HistoryViewer(EventHandler):
         # Draw a frame with a custom banner title
         log_console.draw_frame(0, 0, log_console.width, log_console.height)
         log_console.print_box(
-            0, 0, log_console.width, 1, '-|Message History|-', alignment = tcod.CENTER
+            0, 0, log_console.width, 1, '-|Message History|-', alignment = libtcodpy.CENTER
         )
 
         #render the message log using the curser parameter.
@@ -149,4 +149,4 @@ class HistoryViewer(EventHandler):
         elif event.sym == tcod.event.KeySym.END:
             self.cursor = self.log_length - 1 #move directly to the last message
         else: # any other key moves back to the main game state
-            self.evngine.event_handler = MainGameEventHandler(self.engine)
+            self.engine.event_handler = MainGameEventHandler(self.engine)
