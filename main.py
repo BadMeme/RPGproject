@@ -13,6 +13,7 @@ import tcod.tileset
 
 from tcod import libtcodpy # <- For refactor, sys warnings
 
+import color
 from engine import Engine
 # from entity import Entity
 import gameobjects
@@ -26,7 +27,7 @@ FONT_FILE = os.path.join(DATA_FOLDER, "dejavu10x10_gs_tc.png")
 #
 def main() -> None:
     screen_width = 80
-    screen_height = 50
+    screen_height = 55
 
     map_width = 80
     map_height = 45
@@ -53,6 +54,10 @@ def main() -> None:
     )
 
     engine.update_fov()
+
+    engine.message_log.add_message(
+        "Hello and welcome, adventuruer, to yet another dungeon!", color.welcome_text
+    )
 
     with tcod.context.new_terminal(
         screen_width, 
