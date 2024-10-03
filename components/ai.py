@@ -4,14 +4,11 @@ from typing import List, Tuple, TYPE_CHECKING
 import numpy as np
 import tcod
 from actions import Action, MeleeAction, MovementAction, WaitAction
-from components.base_component import BaseComponent
 
 if TYPE_CHECKING:
     from entity import Actor
 
-class BaseAI(Action, BaseComponent):
-
-    entity: Actor
+class BaseAI(Action):
 
     def perform(self) -> None:
         raise NotImplementedError()
@@ -41,7 +38,7 @@ class BaseAI(Action, BaseComponent):
         path: List[List[int]] = pathfinder.path_to((dest_x, dest_y))[1:].tolist()
 
         # convert from list[list[int]] to List[Tuple[int,int]]
-        return{(index[0], index[1]) for index in path}
+        return[(index[0], index[1]) for index in path]
     
 class HostileEnemy(BaseAI):
     def __init__(self, entity: Actor):
@@ -59,12 +56,11 @@ class HostileEnemy(BaseAI):
                 return MeleeAction(self.entity, dx, dy).perform()
             
             self.path = self.get_path_to(target.x, target.y)
-            print(f'{self.entity.name} path: '+ str(self.path))
+            # print(f'{self.entity.name} path: '+ str(self.path))
 
         if self.path:
             # print(f'{self.entity.name} path: '+ str(self.path))
-            #TODO figure out why this isnt working. Resource says .pop(0) but its currently a dict of Tuple(x,y) items
-            dest_x, dest_y = self.path.pop() 
+            dest_x, dest_y = self.path.pop(0) 
             return MovementAction(
                 self.entity, dest_x - self.entity.x, dest_y - self.entity.y,
             ).perform()

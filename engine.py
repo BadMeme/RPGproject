@@ -7,6 +7,7 @@ from tcod.map import compute_fov
 
 # from entity import Entity
 # from game_map import GameMap
+import exceptions
 from message_log import MessageLog
 from input_handlers import MainGameEventHandler
 from render_functions import render_bar, render_names_at_mouse_location
@@ -29,7 +30,10 @@ class Engine:
         for entity in set(self.game_map.actors) - {self.player}:
             # print(f'The {entity.name} wonders when it will get to take a real turn.')
             if entity.ai:
-                entity.ai.perform()
+                try:
+                    entity.ai.perform()
+                except exceptions.Impossible:
+                    pass # ignore impossible action exceptions from AI
 
     def update_fov(self) -> None:
         self.game_map.visible[:] = compute_fov(
