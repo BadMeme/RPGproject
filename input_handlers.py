@@ -20,43 +20,43 @@ if TYPE_CHECKING:
 
 MOVE_KEYS = {
     # Arrow keys.
-    tcod.event.K_UP: (0, -1),
-    tcod.event.K_DOWN: (0, 1),
-    tcod.event.K_LEFT: (-1, 0),
-    tcod.event.K_RIGHT: (1, 0),
-    tcod.event.K_HOME: (-1, -1),
-    tcod.event.K_END: (-1, 1),
-    tcod.event.K_PAGEUP: (1, -1),
-    tcod.event.K_PAGEDOWN: (1, 1),
+    tcod.event.KeySym.UP: (0, -1),
+    tcod.event.KeySym.DOWN: (0, 1),
+    tcod.event.KeySym.LEFT: (-1, 0),
+    tcod.event.KeySym.RIGHT: (1, 0),
+    tcod.event.KeySym.HOME: (-1, -1),
+    tcod.event.KeySym.END: (-1, 1),
+    tcod.event.KeySym.PAGEUP: (1, -1),
+    tcod.event.KeySym.PAGEDOWN: (1, 1),
     # Numpad keys.
-    tcod.event.K_KP_1: (-1, 1),
-    tcod.event.K_KP_2: (0, 1),
-    tcod.event.K_KP_3: (1, 1),
-    tcod.event.K_KP_4: (-1, 0),
-    tcod.event.K_KP_6: (1, 0),
-    tcod.event.K_KP_7: (-1, -1),
-    tcod.event.K_KP_8: (0, -1),
-    tcod.event.K_KP_9: (1, -1),
+    tcod.event.KeySym.KP_1: (-1, 1),
+    tcod.event.KeySym.KP_2: (0, 1),
+    tcod.event.KeySym.KP_3: (1, 1),
+    tcod.event.KeySym.KP_4: (-1, 0),
+    tcod.event.KeySym.KP_6: (1, 0),
+    tcod.event.KeySym.KP_7: (-1, -1),
+    tcod.event.KeySym.KP_8: (0, -1),
+    tcod.event.KeySym.KP_9: (1, -1),
     # Vi keys.
-    tcod.event.K_h: (-1, 0),
-    tcod.event.K_j: (0, 1),
-    tcod.event.K_k: (0, -1),
-    tcod.event.K_l: (1, 0),
-    tcod.event.K_y: (-1, -1),
-    tcod.event.K_u: (1, -1),
-    tcod.event.K_b: (-1, 1),
-    tcod.event.K_n: (1, 1),
+    tcod.event.KeySym.h: (-1, 0),
+    tcod.event.KeySym.j: (0, 1),
+    tcod.event.KeySym.k: (0, -1),
+    tcod.event.KeySym.l: (1, 0),
+    tcod.event.KeySym.y: (-1, -1),
+    tcod.event.KeySym.u: (1, -1),
+    tcod.event.KeySym.b: (-1, 1),
+    tcod.event.KeySym.n: (1, 1),
 }
 
 WAIT_KEYS = {
-    tcod.event.K_PERIOD,
-    tcod.event.K_KP_5,
-    tcod.event.K_CLEAR,
+    tcod.event.KeySym.PERIOD,
+    tcod.event.KeySym.KP_5,
+    tcod.event.KeySym.CLEAR,
 }
 
 CONFIRM_KEYS = {
-    tcod.event.K_RETURN,
-    tcod.event.K_KP_ENTER,
+    tcod.event.KeySym.RETURN,
+    tcod.event.KeySym.KP_ENTER,
 }
 
 class EventHandler(tcod.event.EventDispatch[Action]) :
@@ -255,6 +255,23 @@ class SelectIndexHandler(AskUserEventHandler):
             return self.on_index_selected(*self.engine.mouse_location)
         return super().ev_keydown(event)
 
+    def ev_mousebuttondown(self, event: tcod.event.MouseButtonDown) -> Optional[Action]:
+        """Left click confirms a selection."""
+        if self.engine.game_map.in_bounds(*event.tile):
+            if event.button == 1:
+                return self.on_index_selected(*event.tile)
+        return super().ev_mousebuttondown(event)
+    
+    def on_index_selected(self, x:int, y:int) -> Optional[Action]:
+        """Called when an index is selected."""
+        raise NotImplementedError()
+    
+class LookHandler(SelectIndexHandler):
+    """Lets the player look around using the keyboard"""
+
+    def on_index_selected(self, x:int, y: int) -> None:
+        """Return to main handler."""
+        self.engine.event_handler = MainGameEventHandler(self.engine)
 
 class MainGameEventHandler(EventHandler):
     
@@ -287,6 +304,8 @@ class MainGameEventHandler(EventHandler):
             self.engine.event_handler = InventoryActivateHandler(self.engine)
         elif key == tcod.event.KeySym.d:
             self.engine.event_handler = InventoryDropHandler(self.engine)
+        elif key == tcod.event.KeySym.SLASH: 
+            self.engine.event_handler = LookHandler(self.engine)
 
         return action
     
