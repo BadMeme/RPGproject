@@ -67,7 +67,7 @@ def place_entities(
             if item_chance < 0.7:
                 gameobjects.health_potion.spawn(dungeon, x, y)
             else:
-                gameobjects.lighting_scroll.spawn(dungeon, x, y)
+                gameobjects.magebolt_scroll.spawn(dungeon, x, y)
 
 def tunnel_between(
         start: Tuple[int, int], end: Tuple[int, int]
