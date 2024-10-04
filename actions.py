@@ -66,7 +66,7 @@ class ItemAction(Action):
     @property
     def target_actor(self) -> Optional[Actor]:
         """Return the actor at this actions destination."""
-        return self.engine.game_map.get_actor_at_locatoin(*self.target_xy)
+        return self.engine.game_map.get_actor_at_location(*self.target_xy)
     
     def perform(self):
         """Invoke this item's ability, this actin will be given to provide context."""

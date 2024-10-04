@@ -66,6 +66,8 @@ def place_entities(
 
             if item_chance < 0.7:
                 gameobjects.health_potion.spawn(dungeon, x, y)
+            elif item_chance < 0.8:
+                gameobjects.mageburst_scroll.spawn(dungeon, x, y)
             elif item_chance < 0.9:
                 gameobjects.confusion_scroll.spawn(dungeon, x, y)
             else:

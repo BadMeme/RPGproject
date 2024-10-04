@@ -54,6 +54,13 @@ confusion_scroll = Item(
     consumable=consumable.ConfusionConsumable(number_of_turns=10),
 )
 
+mageburst_scroll = Item(
+    char="~",
+    color=(255, 0, 0),
+    name="Mageburst scroll",
+    consumable=consumable.MagicAreaDamageConsumable(damage=12, radius = 3)
+)
+
 ### Old structs, will refactor into new schema
 class character:
     def __init__(self):
