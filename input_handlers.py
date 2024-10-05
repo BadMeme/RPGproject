@@ -81,7 +81,7 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         raise SystemExit()
 
-class EventHandler(tcod.event.EventDispatch[Action]) :
+class EventHandler(BaseEventHandler) :
     def __init__(self, engine: Engine):
         self.engine = engine
 
@@ -102,7 +102,6 @@ class EventHandler(tcod.event.EventDispatch[Action]) :
     def handle_action(self, action: Optional[Action]) -> bool:
         """Handle actions returned from event methods.
         Returns True if the acction will advance a turn"""
-        
         if action is None:
             return False
         
