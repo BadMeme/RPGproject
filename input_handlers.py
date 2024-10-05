@@ -96,19 +96,18 @@ class EventHandler(tcod.event.EventDispatch[Action]) :
                 #player was killed after action
                 return GameOverEventHandler(self.engine)
             return MainGameEventHandler(self.engine) #returns to the main handler.
-        
         return self
 
 
-    def handle_action(self, action: tcod.event.Event) -> None:
+    def handle_action(self, action: Optional[Action]) -> bool:
         """Handle actions returned from event methods.
-        
         Returns True if the acction will advance a turn"""
-
+        
         if action is None:
             return False
         
         try:
+            print(action)
             action.perform()
         except exceptions.Impossible as exc:
             self.engine.message_log.add_message(exc.args[0], color.impossible)
@@ -295,14 +294,14 @@ class SelectIndexHandler(AskUserEventHandler):
                 return self.on_index_selected(*event.tile)
         return super().ev_mousebuttondown(event)
     
-    def on_index_selected(self, x:int, y:int) -> Optional[ActionOrHandler]:
+    def on_index_selected(self, x: int, y: int) -> Optional[ActionOrHandler]:
         """Called when an index is selected."""
         raise NotImplementedError()
     
 class LookHandler(SelectIndexHandler):
     """Lets the player look around using the keyboard"""
 
-    def on_index_selected(self, x:int, y: int) -> MainGameEventHandler:
+    def on_index_selected(self, x: int, y: int) -> MainGameEventHandler:
         """Return to main handler."""
         return MainGameEventHandler(self.engine)
 
@@ -352,7 +351,7 @@ class AreaRangedAttackHandler(SelectIndexHandler):
         )
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
-        return self. callback((x, y))        
+        return self.callback((x, y))        
     
 class MainGameEventHandler(EventHandler):
     
@@ -363,28 +362,26 @@ class MainGameEventHandler(EventHandler):
 
         player = self.engine.player
 
-        if key == tcod.event.KeySym.UP:
-            # action = MovementAction(dx=0, dy=-1)
-            action = BumpAction(player, dx=0, dy=-1)
-        elif key == tcod.event.KeySym.DOWN:
-            # action = MovementAction(dx=0, dy=1)
-            action = BumpAction(player, dx=0, dy=1)
-        elif key == tcod.event.KeySym.LEFT:
-            # action = MovementAction(dx=-1, dy=0)
-            action = BumpAction(player, dx=-1, dy=0)
-        elif key == tcod.event.KeySym.RIGHT:
-            # action = MovementAction(dx=1, dy=0)
-            action = BumpAction(player, dx=1, dy=0)
+        if key in MOVE_KEYS:
+            dx, dy = MOVE_KEYS[key]
+            action = BumpAction(player, dx, dy)
+        elif key in WAIT_KEYS:
+            action = WaitAction(player)
+
         elif key == tcod.event.KeySym.ESCAPE:
             raise SystemExit()
         elif key == tcod.event.KeySym.v:
             return HistoryViewer(self.engine)
+        
         elif key == tcod.event.KeySym.g:
             action = PickupAction(player)
+
         elif key == tcod.event.KeySym.i:
             return InventoryActivateHandler(self.engine)
+        
         elif key == tcod.event.KeySym.d:
             return InventoryDropHandler(self.engine)
+        
         elif key == tcod.event.KeySym.SLASH: 
             return LookHandler(self.engine)
 

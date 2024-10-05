@@ -9,19 +9,22 @@ from tcod.map import compute_fov
 # from game_map import GameMap
 import exceptions
 from message_log import MessageLog
-from input_handlers import MainGameEventHandler
-from render_functions import render_bar, render_names_at_mouse_location
+# from input_handlers import MainGameEventHandler
+from render_functions import (
+    render_bar, 
+    render_names_at_mouse_location
+)
 
 if TYPE_CHECKING:
     from entity import Actor
     from game_map import GameMap
-    from input_handlers import EventHandler
+    # from input_handlers import EventHandler
 
 class Engine:
     game_map: GameMap
 
     def __init__(self, player: Actor):
-        self.event_handler : EventHandler = MainGameEventHandler(self)
+        # self.event_handler : EventHandler = MainGameEventHandler(self)
         self.message_log = MessageLog()
         self.mouse_location =(0,0)
         self.player = player
