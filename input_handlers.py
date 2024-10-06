@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import os
 from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
 import tcod.event
 from tcod import libtcodpy
@@ -67,9 +69,9 @@ If an action is returned it will be attempted and if its valid then
 MainGameEventHandler will become the active handler."""
 
 class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
-    def handler_events(self, event: tcod.event.Event) -> BaseEventHandler:
+    def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle an event and return teh next active event handler."""
-        state = state.dispatch(event)
+        state = self.dispatch(event)
         if isinstance(state, BaseEventHandler):
             return state
         assert not isinstance(state, Action), f"{self!r} can not handle actions."
@@ -80,6 +82,32 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         raise SystemExit()
+    
+class PopupMessage(BaseEventHandler):
+    """Display a popup text window."""
+
+    def __init__(self, parent_handler: BaseEventHandler, text: str):
+        self.parent = parent_handler
+        self.text = text
+
+    def on_render(self, console: tcod.Console) -> None:
+        """Render the parent and dim the result, then print the message on top."""
+        self.parent.on_render(console)
+        console.tiles_rgb["fg"] //= 8
+        console.tiles_rgb["bg"] //= 8
+
+        console.print(
+            console.width // 2,
+            console.height // 2,
+            self.text,
+            fg = color.white,
+            bg = color.black,
+            alignment = tcod.CENTER,
+        )
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
+        """Any key returns to the parent handler."""
+        return self.parent
 
 class EventHandler(BaseEventHandler) :
     def __init__(self, engine: Engine):
@@ -106,7 +134,6 @@ class EventHandler(BaseEventHandler) :
             return False
         
         try:
-            print(action)
             action.perform()
         except exceptions.Impossible as exc:
             self.engine.message_log.add_message(exc.args[0], color.impossible)
@@ -387,14 +414,22 @@ class MainGameEventHandler(EventHandler):
         return action
     
 class GameOverEventHandler(EventHandler):
-
+    def on_quit(self) -> None:
+        """Handle exiting out of a finished game"""
+        if os.path.exists("savegame.sav"):
+            os.remove("savegame.sav") #deletes active save file.
+        raise exceptions.QuitWithoutSaving() # Avoid saving a finished game
+    
+    def ev_quit(self, event: tcod.event.Quit) -> None:
+        self.on_quit()
+        
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
         action: Optional[Action] = None
 
         key = event.sym
 
-        if key == tcod.event.KeySym.ESCAPE: #TODO this makes an error, suggests ESCAPE but doesnt work
-            raise SystemExit()
+        if key == tcod.event.KeySym.ESCAPE:
+            self.on_quit()
 
         #no valid key was pressed
         return action
