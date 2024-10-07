@@ -123,6 +123,8 @@ class EventHandler(BaseEventHandler) :
             if not self.engine.player.is_alive:
                 #player was killed after action
                 return GameOverEventHandler(self.engine)
+            elif self.engine.player.level.requires_level_up:
+                return LevelUpEventHandler(self.engine)
             return MainGameEventHandler(self.engine) #returns to the main handler.
         return self
 
@@ -205,7 +207,8 @@ class LevelUpEventHandler(AskUserEventHandler):
             fg=(255, 255, 255),
             bg=(0, 0, 0),
         )
-
+        console.print(x=x + 1, y=1, string="Congratulations! You level up!")
+        console.print(x=x + 1, y=2, string="Select an attribute to increase.")
         console.print(
             x=x+1,
             y=4,
@@ -225,7 +228,7 @@ class LevelUpEventHandler(AskUserEventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         player = self.engine.player
         key = event.sym
-        index = key - tcod.event.keySym.a
+        index = key - tcod.event.KeySym.a
 
         if 0 <= index <= 2:
             if index == 0:

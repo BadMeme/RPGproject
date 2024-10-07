@@ -24,7 +24,7 @@ class Level(BaseComponent):
 
     @property
     def experience_to_next_level(self) -> int:
-        return self.level_up_base + self.currentlevel * self.level_up_factor
+        return self.level_up_base + self.current_level * self.level_up_factor
     
     @property
     def requires_level_up(self) -> bool:
