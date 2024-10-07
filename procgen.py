@@ -92,7 +92,7 @@ def tunnel_between(
     for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
         yield x, y
 
-def generate_dungeon(
+def generate_dungeon( #TODO this feels like it needs a different name
         max_rooms: int,
         room_min_size: int,
         room_max_size: int,
@@ -107,6 +107,8 @@ def generate_dungeon(
     dungeon = GameMap(engine, map_width, map_height, entities =[player])
 
     rooms: List[RectangularRoom] = []
+
+    center_of_last_room = (0, 0)
 
     for r in range (max_rooms):
         room_width = random.randint(room_min_size, room_max_size)
@@ -133,7 +135,13 @@ def generate_dungeon(
             for x, y in tunnel_between(rooms[-1].center, new_room.center) :
                 dungeon.tiles[x,y] = tile_types.floor
 
+            center_of_last_room = new_room.center
+
         place_entities(new_room, dungeon, max_monsters_per_room, max_items_per_room)
+
+        dungeon.tiles[center_of_last_room] = tile_types.down_stairs
+        dungeon.downstairs_location = center_of_last_room
+
 
         rooms.append(new_room)
     
