@@ -17,12 +17,12 @@ import render_functions
 
 if TYPE_CHECKING:
     from entity import Actor
-    from game_map import GameMap, Dungeon
+    from game_map import GameMap, GameWorld
     # from input_handlers import EventHandler
 
 class Engine:
     game_map: GameMap
-    dungeon: Dungeon
+    game_world: GameWorld
 
     def __init__(self, player: Actor):
         # self.event_handler : EventHandler = MainGameEventHandler(self)
@@ -62,7 +62,7 @@ class Engine:
 
         render_functions.render_dungeon_level(
             console=console,
-            dungeon_level=self.dungeon.current_floor,
+            dungeon_level=self.game_world.current_floor,
             location=(0, 47)
         )
 
