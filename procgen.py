@@ -50,6 +50,32 @@ def get_max_value_for_floor(
     
     return current_value
 
+def get_entities_at_random(
+        weighted_chances_by_floor: Dict[int, List[Tuple[Entity, int]]],
+        number_of_entities: int,
+        floor: int,
+) -> List[Entity]:
+    entity_weighted_chances = {}
+
+    for key, values in weighted_chances_by_floor.items():
+        if key > floor:
+            break
+        else:
+            for value in values:
+                entity = value[0]
+                weighted_chance = value[1]
+
+                entity_weighted_chances[entity] = weighted_chance
+
+        entities = list(entity_weighted_chances.keys())
+        entity_weighted_chance_values = list(entity_weighted_chances.values())
+
+        chosen_entities = random.choices(
+            entities, weights = entity_weighted_chance_values, k = number_of_entities
+        )
+
+        return chosen_entities
+    
 class RectangularRoom:
     def __init__(self, x: int, y: int, width: int, height: int):
         self.x1 = x
@@ -89,33 +115,21 @@ def place_entities(
         0, get_max_value_for_floor(max_items_by_floor, floor_number)
     )
 
-    for i in range(number_of_monsters):
-        x = random.randint(room.x1 + 1, room.x2 - 1)
-        y = random.randint(room.y1 + 1, room.y2 - 1)
-        #spawn location
+    monsters: List[Entity] = get_entities_at_random(
+        enemy_chances, number_of_monsters, floor_number
+    )
 
-        if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
-            if random.random() < 0.8:
-                gameobjects.orc.spawn(dungeon, x, y)
-            else:
-                gameobjects.troll.spawn(dungeon, x, y)
+    items: List[Entity] = get_entities_at_random(
+        item_chances, number_of_items, floor_number
+    )
 
-    for i in range(number_of_items):
+    for entity in monsters + items:
         x = random.randint(room.x1 + 1, room.x2 - 1)
         y = random.randint(room.y1 + 1, room.y2 - 1)
         #spawn location   
         
         if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
-            item_chance = random.random()
-
-            if item_chance < 0.7:
-                gameobjects.health_potion.spawn(dungeon, x, y)
-            elif item_chance < 0.8:
-                gameobjects.mageburst_scroll.spawn(dungeon, x, y)
-            elif item_chance < 0.9:
-                gameobjects.confusion_scroll.spawn(dungeon, x, y)
-            else:
-                gameobjects.magebolt_scroll.spawn(dungeon, x, y)
+            entity.spawn(dungeon, x, y)
 
 def tunnel_between(
         start: Tuple[int, int], end: Tuple[int, int]
