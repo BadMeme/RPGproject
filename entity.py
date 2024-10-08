@@ -10,6 +10,7 @@ from render_order import RenderOrder
 if TYPE_CHECKING:
     from game_map import GameMap
     from components.consumable import Consumable
+    from components.equippable import Equippable
     from components.ai import BaseAI
     from components.fighter import Fighter
     from components.character_progression import Level
@@ -129,7 +130,8 @@ class Item(Entity):
             char: str = "?",
             color: Tuple[int, int, int] = (255, 255, 255),
             name: str = "<Unnamed>",
-            consumable: Consumable,
+            consumable: Optional[Consumable] = None,
+            equippable: Optional[Equippable] = None,
     ):
         super().__init__(
             x=x,
@@ -142,4 +144,11 @@ class Item(Entity):
         )
 
         self.consumable = consumable
-        self.consumable.parent = self
+        
+        if self.consumable:
+            self.consumable.parent = self
+        
+        self.equippable = equippable
+
+        if self. equippable:
+            self.equippable.parent = self
