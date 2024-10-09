@@ -14,6 +14,17 @@ class Equipment(BaseComponent):
         self.armor = armor
 
     @property
+    def power_bonus(self) -> int:
+        bonus = 0
+
+        if self.weapon is not None and self.weapon.equippable is not None:
+            bonus += self.weapon.equippable.power_bonus
+
+        if self.armor is not None and self.armor.equippable is not None:
+            bonus += self.armor.equippable.power_bonus
+
+        return bonus
+    @property
     def defense_bonus(self) -> int:
         bonus = 0
 
@@ -29,7 +40,7 @@ class Equipment(BaseComponent):
         return self.weapon == item or self.armor == item
     
     def unequip_message(self, item_name: str) -> None:
-        self.parent.gamemap.engeine.message_log.add_message(
+        self.parent.gamemap.engine.message_log.add_message(
             f"You equip the {item_name}."
         )
 
