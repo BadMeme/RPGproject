@@ -79,6 +79,13 @@ dagger = Item(
 sword = Item(
     char="[",
     color=(139, 69, 19),
+    name="Swordr",
+    equippable=equippable.Sword(),
+)
+
+leather_armor = Item(
+    char="[",
+    color=(139, 69, 19),
     name="Leather Armor",
     equippable=equippable.LeatherArmor(),
 )
@@ -87,7 +94,7 @@ chain_mail = Item(
     char="[", 
     color=(139, 69, 19), 
     name="Chain Mail", 
-    equippable=equippable.Chainmail()
+    equippable=equippable.ChainMail()
 )
 
 
